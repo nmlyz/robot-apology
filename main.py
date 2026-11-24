@@ -15,7 +15,18 @@ ENTRY = (
 )
 
 
+def validate(text: str) -> None:
+    """Refuse to write an entry the gate would reject: not UTF-8 text of
+    1 to 400 characters, not exactly two non-blank lines."""
+    if not 1 <= len(text) <= 400:
+        raise ValueError(f"entry is {len(text)} characters, must be 1-400")
+    lines = text.split("\n")
+    if len(lines) != 3 or lines[2] != "" or not all(line.strip() for line in lines[:2]):
+        raise ValueError("entry must be exactly two non-blank lines")
+
+
 def main() -> None:
+    validate(ENTRY)
     out_dir = os.environ.get("OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
